@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برنامج تمرين مخصص</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    color: #e2e8f0;
+    min-height: 100vh;
+    direction: rtl;
+  }
+  .header {
+    background: linear-gradient(90deg, #1e3a5f 0%, #0f2027 100%);
+    border-bottom: 2px solid #4ade8033;
+    padding: 16px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px #0008;
+  }
+  .header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .header-title { font-size: 17px; font-weight: 800; color: #4ade80; }
+  .header-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 5px 12px; border-radius: 20px; border: none;
+    cursor: pointer; font-size: 12px; font-weight: 700;
+    background: #ffffff15; color: #94a3b8;
+    transition: all .2s; font-family: inherit;
+  }
+  .tab-btn.active { background: #4ade80; color: #0f1a0f; }
+  .content { max-width: 680px; margin: 0 auto; padding: 16px 14px 40px; }
+  .day-btns { display: flex; gap: 8px; margin-bottom: 18px; }
+  .day-btn {
+    flex: 1; padding: 10px 6px; border-radius: 14px;
+    border: 2px solid #ffffff15; background: #ffffff08;
+    color: #64748b; cursor: pointer; font-weight: 800;
+    font-size: 12px; text-align: center; transition: all .2s;
+    font-family: inherit;
+  }
+  .day-btn .icon { font-size: 20px; display: block; margin-bottom: 3px; }
+  .day-btn .dur { font-size: 10px; font-weight: 400; margin-top: 2px; color: #475569; }
+  .day-header {
+    border-radius: 16px; padding: 14px 16px;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 12px;
+  }
+  .day-header .big-icon { font-size: 30px; }
+  .day-header .day-title { font-weight: 800; font-size: 15px; }
+  .day-header .day-time { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+  .section {
+    background: #ffffff06; border-radius: 16px;
+    padding: 14px 14px; margin-bottom: 12px;
+  }
+  .section-title {
+    font-weight: 800; font-size: 13px; margin-bottom: 10px;
+    border-bottom: 1px solid #ffffff10; padding-bottom: 8px;
+  }
+  .warmup-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 0; font-size: 13px; color: #cbd5e1;
+    border-bottom: 1px solid #ffffff08;
+  }
+  .warmup-item:last-child { border-bottom: none; }
+  .warmup-arrow { color: #fb923c; font-size: 16px; }
+  .ex-header {
+    display: grid; grid-template-columns: 1fr 110px;
+    font-size: 10px; color: #64748b; font-weight: 700;
+    padding: 4px 0 8px; border-bottom: 1px solid #ffffff10;
+  }
+  .ex-header-badges { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; text-align: center; }
+  .ex-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 0; border-bottom: 1px solid #ffffff08;
+    cursor: pointer; transition: opacity .2s;
+  }
+  .ex-row:last-child { border-bottom: none; }
+  .ex-row.done { opacity: 0.4; }
+  .checkbox {
+    width: 22px; height: 22px; border-radius: 6px;
+    border: 2px solid #334155; background: transparent;
+    flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 13px; color: #0f1a0f;
+    transition: all .2s;
+  }
+  .ex-name { font-weight: 700; font-size: 13px; color: #e2e8f0; }
+  .ex-name.done { text-decoration: line-through; }
+  .ex-detail { font-size: 11px; color: #64748b; margin-top: 1px; }
+  .badges { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; width: 110px; }
+  .badge {
+    border-radius: 7px; padding: 3px 4px;
+    font-size: 11px; font-weight: 700; text-align: center;
+  }
+  .extra-note {
+    border-radius: 12px; padding: 12px 14px;
+    margin-top: 8px; font-size: 13px; line-height: 1.6;
+  }
+  .extra-note p { color: #94a3b8; font-size: 12px; margin-top: 4px; }
+  .rest-card {
+    border-radius: 18px; padding: 36px 20px;
+    text-align: center; margin-top: 10px;
+  }
+  .rest-icon { font-size: 60px; margin-bottom: 12px; }
+  .rest-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .rest-desc { font-size: 14px; color: #94a3b8; line-height: 1.7; }
+  .rest-tips { margin-top: 20px; text-align: right; }
+  .rest-tip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid #ffffff08;
+    font-size: 13px; color: #cbd5e1;
+  }
+  .rule-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid #ffffff08;
+    font-size: 14px; font-weight: 600;
+  }
+  .rule-row:last-child { border-bottom: none; }
+  .nut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
+  .nut-head {
+    text-align: center; font-weight: 800; font-size: 11px;
+    padding: 6px; border-radius: 8px;
+  }
+  .nut-cell { border-radius: 10px; padding: 9px 10px; font-size: 12px; line-height: 1.5; }
+  .prog-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 0; border-bottom: 1px solid #ffffff08;
+  }
+  .prog-row:last-child { border-bottom: none; }
+  .prog-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 15px; color: #fff; flex-shrink: 0;
+  }
+  .prog-phase { font-weight: 700; font-size: 14px; }
+  .prog-time { font-size: 12px; color: #64748b; }
+  .prog-goal {
+    background: #818cf822; border: 1px solid #818cf844;
+    border-radius: 10px; padding: 4px 10px;
+    font-size: 12px; color: #818cf8; font-weight: 700;
+    white-space: nowrap;
+  }
+  .goal-note {
+    background: #fbbf2411; border: 1.5px solid #fbbf2444;
+    border-radius: 14px; padding: 14px 16px;
+    margin-top: 10px; font-size: 13px; color: #fcd34d; line-height: 1.7;
+  }
+  .goal-note span { color: #94a3b8; font-size: 12px; }
+  .week-title {
+    font-size: 13px; font-weight: 800; color: #94a3b8;
+    margin-bottom: 10px; text-align: center; letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <span style="font-size:26px">🏋️‍♀️</span>
+    <div>
+      <div class="header-title">برنامج تمرين مخصص</div>
+      <div class="header-sub">50 سنة · 85kg · 168cm · هدف: الوزن المثالي</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('program')">📅 البرنامج</button>
+    <button class="tab-btn" onclick="showTab('rules')">⚠️ القواعد</button>
+    <button class="tab-btn" onclick="showTab('nutrition')">🍽️ التغذية</button>
+    <button class="tab-btn" onclick="showTab('progress')">📈 التقدم</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- PROGRAM TAB -->
+  <div id="tab-program">
+    <div class="week-title">— الأسبوع —</div>
+    <div class="day-btns">
+      <button class="day-btn active" id="btn-1" onclick="showDay(1)" style="border-color:#4ade80;background:#4ade8022;color:#4ade80">
+        <span class="icon">💪</span>يوم 1<span class="dur">35 دقيقة</span>
+      </button>
+      <button class="day-btn" id="btn-2" onclick="showDay(2)">
+        <span class="icon">😴</span>يوم 2<span class="dur">راحة</span>
+      </button>
+      <button class="day-btn active-y" id="btn-3" onclick="showDay(3)">
+        <span class="icon">🦵</span>يوم 3<span class="dur">35 دقيقة</span>
+      </button>
+      <button class="day-btn" id="btn-4" onclick="showDay(4)">
+        <span class="icon">😴</span>يوم 4<span class="dur">راحة</span>
+      </button>
+      <button class="day-btn" id="btn-5" onclick="showDay(5)">
+        <span class="icon">🧘‍♀️</span>يوم 5<span class="dur">40 دقيقة</span>
+      </button>
+      <button class="day-btn" id="btn-6" onclick="showDay(6)">
+        <span class="icon">😴</span>يوم 6<span class="dur">راحة</span>
+      </button>
+      <button class="day-btn" id="btn-7" onclick="showDay(7)">
+        <span class="icon">😴</span>يوم 7<span class="dur">راحة</span>
+      </button>
+    </div>
+
+    <!-- DAY 1 -->
+    <div id="day-1">
+      <div class="day-header" style="background:linear-gradient(135deg,#4ade8022,#4ade8008);border:1.5px solid #4ade8044">
+        <span class="big-icon">💪</span>
+        <div>
+          <div class="day-title" style="color:#4ade80">اليوم 1 — الجزء العلوي + التنفس</div>
+          <div class="day-time">⏱ 35 دقيقة</div>
+        </div>
+      </div>
+      <div class="section" style="border:1.5px solid #fb923c22">
+        <div class="section-title" style="color:#fb923c">🔥 إحماء (5 دقائق)</div>
+        <div class="warmup-item"><span class="warmup-arrow">›</span>دوران الكتفين للأمام والخلف × 10</div>
+        <div class="warmup-item"><span class="warmup-arrow">›</span>دوران الرقبة ببطء × 5 لكل جهة</div>
+        <div class="warmup-item"><span class="warmup-arrow">›</span>المشي في المكان ببطء × 2 دقيقة</div>
+      </div>
+      <div class="section" style="border:1.5px solid #4ade8022">
+        <div class="section-title" style="color:#4ade80">💥 التمارين الرئيسية</div>
+        <div class="ex-header">
+          <span>التمرين</span>
+          <div class="ex-header-badges"><span>مج</span><span>تك</span><span>راحة</span></div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#4ade80">　</div>
+          <div style="flex:1"><div class="ex-name">رفع الذراعين للجانب</div><div class="ex-detail">بـ 1kg</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">3×</div>
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">12</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#4ade80">　</div>
+          <div style="flex:1"><div class="ex-name">رفع الذراعين للأمام</div><div class="ex-detail">بـ 1kg</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">3×</div>
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">12</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#4ade80">　</div>
+          <div style="flex:1"><div class="ex-name">ثني الذراع (Biceps Curl)</div><div class="ex-detail">بـ 1kg</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">3×</div>
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">15</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#4ade80">　</div>
+          <div style="flex:1"><div class="ex-name">ضغط الكتف لأعلى</div><div class="ex-detail">جالسة</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">3×</div>
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">10</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">60ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#4ade80">　</div>
+          <div style="flex:1"><div class="ex-name">فتح الذراعين</div><div class="ex-detail">جالسة</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">3×</div>
+            <div class="badge" style="background:#4ade8022;border:1px solid #4ade8044;color:#4ade80">12</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+      </div>
+      <div class="extra-note" style="background:#4ade8011;border:1.5px solid #4ade8033;color:#86efac">
+        <strong>تمارين التنفس 🫁</strong>
+        <p>شهيق 4 ث → حبس 4 ث → زفير 6 ث — × 10 مرات (مهم لفقر الدم)</p>
+      </div>
+    </div>
+
+    <!-- DAY 2 REST -->
+    <div id="day-2" style="display:none">
+      <div class="rest-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1.5px solid #334155">
+        <div class="rest-icon">😴</div>
+        <div class="rest-title" style="color:#94a3b8">يوم الراحة</div>
+        <div class="rest-desc">جسمك يبني العضلات خلال الراحة،<br>هذا اليوم مهم مثل التمرين تماماً 💪</div>
+        <div class="rest-tips">
+          <div class="rest-tip"><span>💧</span>اشربي الماء بكثرة</div>
+          <div class="rest-tip"><span>🥗</span>تناولي وجبات غنية بالحديد</div>
+          <div class="rest-tip"><span>🛁</span>حمام دافئ يريح العضلات</div>
+          <div class="rest-tip"><span>🌙</span>نومي 7-8 ساعات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div id="day-3" style="display:none">
+      <div class="day-header" style="background:linear-gradient(135deg,#facc1522,#facc1508);border:1.5px solid #facc1544">
+        <span class="big-icon">🦵</span>
+        <div>
+          <div class="day-title" style="color:#facc15">اليوم 3 — الجزء السفلي (آمن للظهر)</div>
+          <div class="day-time">⏱ 35 دقيقة</div>
+        </div>
+      </div>
+      <div class="section" style="border:1.5px solid #fb923c22">
+        <div class="section-title" style="color:#fb923c">🔥 إحماء (5 دقائق)</div>
+        <div class="warmup-item"><span class="warmup-arrow">›</span>المشي في المكان × 3 دقائق</div>
+        <div class="warmup-item"><span class="warmup-arrow">›</span>دوران الكاحل × 10 لكل جهة</div>
+      </div>
+      <div class="section" style="border:1.5px solid #facc1522">
+        <div class="section-title" style="color:#facc15">💥 التمارين الرئيسية</div>
+        <div class="ex-header">
+          <span>التمرين</span>
+          <div class="ex-header-badges"><span>مج</span><span>تك</span><span>راحة</span></div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#facc15">　</div>
+          <div style="flex:1"><div class="ex-name">Squat بالكرسي</div><div class="ex-detail">الجلوس والقيام ببطء</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">3×</div>
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">10</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">60ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#facc15">　</div>
+          <div style="flex:1"><div class="ex-name">رفع الكعب واقفة</div><div class="ex-detail">للساق</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">3×</div>
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">15</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#facc15">　</div>
+          <div style="flex:1"><div class="ex-name">رفع الساق للجانب</div><div class="ex-detail">Abduction واقفة</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">3×</div>
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">12</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#facc15">　</div>
+          <div style="flex:1"><div class="ex-name">رفع الساق للخلف</div><div class="ex-detail">Fessiers واقفة</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">3×</div>
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">12</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">45ث</div>
+          </div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#facc15">　</div>
+          <div style="flex:1"><div class="ex-name">تقلص البطن</div><div class="ex-detail">مستلقية ركبتان مثنيتان</div></div>
+          <div class="badges">
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">3×</div>
+            <div class="badge" style="background:#facc1522;border:1px solid #facc1544;color:#facc15">10</div>
+            <div class="badge" style="background:#94a3b822;border:1px solid #94a3b844;color:#94a3b8;font-size:10px">60ث</div>
+          </div>
+        </div>
+      </div>
+      <div class="extra-note" style="background:#4ade8011;border:1.5px solid #4ade8033;color:#86efac">
+        <strong>✅ ملاحظة مهمة</strong>
+        <p>كل تمارين الساق تُؤدى واقفة ممسكة بالحائط أو مستلقية — لا ضغط على الظهر</p>
+      </div>
+    </div>
+
+    <!-- DAY 4 REST -->
+    <div id="day-4" style="display:none">
+      <div class="rest-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1.5px solid #334155">
+        <div class="rest-icon">😴</div>
+        <div class="rest-title" style="color:#94a3b8">يوم الراحة</div>
+        <div class="rest-desc">جسمك يتعافى ويستعد لليوم 5،<br>استمتعي بالراحة الكاملة 🌸</div>
+        <div class="rest-tips">
+          <div class="rest-tip"><span>💧</span>اشربي الماء بكثرة</div>
+          <div class="rest-tip"><span>🥗</span>تناولي وجبات غنية بالحديد</div>
+          <div class="rest-tip"><span>🛁</span>حمام دافئ يريح العضلات</div>
+          <div class="rest-tip"><span>🌙</span>نومي 7-8 ساعات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div id="day-5" style="display:none">
+      <div class="day-header" style="background:linear-gradient(135deg,#60a5fa22,#60a5fa08);border:1.5px solid #60a5fa44">
+        <span class="big-icon">🧘‍♀️</span>
+        <div>
+          <div class="day-title" style="color:#60a5fa">اليوم 5 — كارديو خفيف + إطالة</div>
+          <div class="day-time">⏱ 40 دقيقة</div>
+        </div>
+      </div>
+      <div class="section" style="border:1.5px solid #60a5fa22">
+        <div class="section-title" style="color:#60a5fa">🚶‍♀️ كارديو (20 دقيقة)</div>
+        <div class="warmup-item"><span style="color:#60a5fa;font-size:16px">›</span>المشي في المكان برفع الركبتين ببطء</div>
+        <div class="warmup-item"><span style="color:#60a5fa;font-size:16px">›</span>موسيقى أيروبيك خفيفة (اختياري)</div>
+        <div class="warmup-item"><span style="color:#60a5fa;font-size:16px">›</span>النبض المستهدف: لا تتجاوزي 120 نبضة/دقيقة</div>
+      </div>
+      <div class="section" style="border:1.5px solid #a78bfa22">
+        <div class="section-title" style="color:#a78bfa">🧘‍♀️ إطالة (20 دقيقة)</div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#a78bfa">　</div>
+          <div style="flex:1"><div class="ex-name">وضعية الطفل (Child's Pose)</div></div>
+          <div style="background:#a78bfa22;border:1px solid #a78bfa44;border-radius:8px;padding:3px 8px;font-size:11px;color:#a78bfa;font-weight:700;white-space:nowrap">60ث × 3</div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#a78bfa">　</div>
+          <div style="flex:1"><div class="ex-name">إطالة Piriformis مستلقية</div></div>
+          <div style="background:#a78bfa22;border:1px solid #a78bfa44;border-radius:8px;padding:3px 8px;font-size:11px;color:#a78bfa;font-weight:700;white-space:nowrap">45ث × 2</div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#a78bfa">　</div>
+          <div style="flex:1"><div class="ex-name">ركبتان على الصدر</div></div>
+          <div style="background:#a78bfa22;border:1px solid #a78bfa44;border-radius:8px;padding:3px 8px;font-size:11px;color:#a78bfa;font-weight:700;white-space:nowrap">60ث × 3</div>
+        </div>
+        <div class="ex-row" onclick="toggleEx(this)">
+          <div class="checkbox" style="border-color:#a78bfa">　</div>
+          <div style="flex:1"><div class="ex-name">إطالة الصدر بالحائط</div></div>
+          <div style="background:#a78bfa22;border:1px solid #a78bfa44;border-radius:8px;padding:3px 8px;font-size:11px;color:#a78bfa;font-weight:700;white-space:nowrap">30ث × 2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 6 REST -->
+    <div id="day-6" style="display:none">
+      <div class="rest-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1.5px solid #334155">
+        <div class="rest-icon">🌸</div>
+        <div class="rest-title" style="color:#94a3b8">يوم الراحة</div>
+        <div class="rest-desc">أسبوع رائع! جسمك يستحق الراحة.<br>استعدي للأسبوع القادم 💪</div>
+        <div class="rest-tips">
+          <div class="rest-tip"><span>💧</span>اشربي الماء بكثرة</div>
+          <div class="rest-tip"><span>🥗</span>تناولي وجبات غنية بالحديد</div>
+          <div class="rest-tip"><span>🛁</span>حمام دافئ يريح العضلات</div>
+          <div class="rest-tip"><span>🌙</span>نومي 7-8 ساعات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 7 REST -->
+    <div id="day-7" style="display:none">
+      <div class="rest-card" style="background:linear-gradient(135deg,#1e293b,#0f172a);border:1.5px solid #334155">
+        <div class="rest-icon">🌟</div>
+        <div class="rest-title" style="color:#94a3b8">يوم الراحة التام</div>
+        <div class="rest-desc">آخر يوم في الأسبوع — راحة كاملة.<br>غداً تبدأ من جديد بطاقة أقوى! 🌅</div>
+        <div class="rest-tips">
+          <div class="rest-tip"><span>💧</span>اشربي الماء بكثرة</div>
+          <div class="rest-tip"><span>🥗</span>خططي لوجباتك الأسبوع القادم</div>
+          <div class="rest-tip"><span>😊</span>كافئي نفسك على الأسبوع</div>
+          <div class="rest-tip"><span>🌙</span>نومي مبكراً</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RULES TAB -->
+  <div id="tab-rules" style="display:none">
+    <div class="section" style="border:1.5px solid #f8717122">
+      <div class="section-title" style="color:#f87171">⚠️ قواعد ذهبية قبل البدء</div>
+      <div class="rule-row"><span style="font-size:20px">🚫</span><span>ممنوع الانحناء للأمام بظهر مقوس</span></div>
+      <div class="rule-row"><span style="font-size:20px">🚫</span><span>ممنوع القفز أو الصدمات</span></div>
+      <div class="rule-row"><span style="font-size:20px">🚫</span><span>ممنوع حمل أثقال فوق 1kg</span></div>
+      <div class="rule-row"><span style="font-size:20px">✅</span><span>الظهر دائماً مستقيم</span></div>
+      <div class="rule-row"><span style="font-size:20px">⛔</span><span style="color:#f87171">ألم في الظهر أو الساق → توقفي فوراً</span></div>
+    </div>
+  </div>
+
+  <!-- NUTRITION TAB -->
+  <div id="tab-nutrition" style="display:none">
+    <div class="section" style="border:1.5px solid #34d39922">
+      <div class="section-title" style="color:#34d399">🍽️ توصيات غذائية</div>
+      <div class="nut-grid">
+        <div class="nut-head" style="color:#34d399;background:#34d39922">✅ أكلي أكثر</div>
+        <div class="nut-head" style="color:#f87171;background:#f8717122">❌ تجنبي</div>
+        <div class="nut-cell" style="background:#34d39911;border:1px solid #34d39933;color:#a7f3d0">عدس، فول، سبانخ (حديد)</div>
+        <div class="nut-cell" style="background:#f8717111;border:1px solid #f8717133;color:#fca5a5">القهوة والشاي بعد الأكل مباشرة</div>
+        <div class="nut-cell" style="background:#34d39911;border:1px solid #34d39933;color:#a7f3d0">لحم أحمر 2×/أسبوع</div>
+        <div class="nut-cell" style="background:#f8717111;border:1px solid #f8717133;color:#fca5a5">الدقيق الأبيض والسكر</div>
+        <div class="nut-cell" style="background:#34d39911;border:1px solid #34d39933;color:#a7f3d0">برتقال مع الأكل (يساعد امتصاص الحديد)</div>
+        <div class="nut-cell" style="background:#f8717111;border:1px solid #f8717133;color:#fca5a5">الأكل الكثير ليلاً</div>
+        <div class="nut-cell" style="background:#34d39911;border:1px solid #34d39933;color:#a7f3d0">ماء كافٍ (1.5 لتر/يوم)</div>
+        <div class="nut-cell"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS TAB -->
+  <div id="tab-progress" style="display:none">
+    <div class="section" style="border:1.5px solid #818cf822">
+      <div class="section-title" style="color:#818cf8">📈 التقدم المتوقع</div>
+      <div class="prog-row">
+        <div class="prog-num" style="background:hsl(230,70%,60%)">1</div>
+        <div style="flex:1"><div class="prog-phase">تكيّف الجسم</div><div class="prog-time">أسبوع 1–4</div></div>
+        <div class="prog-goal">راحة في التمارين</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-num" style="background:hsl(260,70%,60%)">2</div>
+        <div style="flex:1"><div class="prog-phase">بداية فقدان الوزن</div><div class="prog-time">أسبوع 5–8</div></div>
+        <div class="prog-goal">1–2 kg</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-num" style="background:hsl(290,70%,60%)">3</div>
+        <div style="flex:1"><div class="prog-phase">تسارع النتائج</div><div class="prog-time">شهر 3–6</div></div>
+        <div class="prog-goal">3–5 kg إضافية</div>
+      </div>
+    </div>
+    <div class="goal-note">
+      🎯 <strong>الهدف الواقعي:</strong> فقدان <strong>0.5 إلى 1 kg في الشهر</strong> بشكل صحي وآمن<br>
+      <span>💡 أخبري طبيبك بهذا البرنامج قبل البدء، خاصة فيما يخص الانزلاق الغضروفي</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const dayColors = {1:'#4ade80',2:'#64748b',3:'#facc15',4:'#64748b',5:'#60a5fa',6:'#64748b',7:'#64748b'};
+  let currentDay = 1;
+
+  function showTab(tab) {
+    ['program','rules','nutrition','progress'].forEach(t => {
+      document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none';
+    });
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+      b.classList.toggle('active', ['program','rules','nutrition','progress'][i]===tab);
+    });
+  }
+
+  function showDay(n) {
+    for(let i=1;i<=7;i++){
+      document.getElementById('day-'+i).style.display = i===n ? 'block' : 'none';
+      const btn = document.getElementById('btn-'+i);
+      const c = dayColors[i];
+      if(i===n){
+        btn.style.borderColor = c;
+        btn.style.background = c+'22';
+        btn.style.color = c;
+      } else {
+        btn.style.borderColor = '#ffffff15';
+        btn.style.background = '#ffffff08';
+        btn.style.color = '#64748b';
+      }
+    }
+    currentDay = n;
+  }
+
+  function toggleEx(row) {
+    row.classList.toggle('done');
+    const cb = row.querySelector('.checkbox');
+    const name = row.querySelector('.ex-name');
+    const isDone = row.classList.contains('done');
+    const color = dayColors[currentDay] || '#4ade80';
+    cb.style.background = isDone ? color : 'transparent';
+    cb.style.borderColor = isDone ? color : '#334155';
+    cb.textContent = isDone ? '✓' : '\u3000';
+    if(name) name.classList.toggle('done', isDone);
+  }
+</script>
+</body>
+</html>
